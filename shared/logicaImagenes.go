@@ -7,6 +7,7 @@ import (
     _ "image/jpeg"
     "github.com/hajimehoshi/ebiten/v2"
     "multi/assets"
+    "fmt"
 )
 
 // LoadImage carga una imagen embebida desde assets
@@ -43,3 +44,24 @@ func IsMouseOverArea(x, y, w, h float64) bool {
         float64(my) >= y && float64(my) <= y+h
 }
 
+func DrawImagen(screen *ebiten.Image, btnImage *ebiten.Image, tamaño float64, ejeX int, ejeY int) {
+    scale := tamaño
+
+    w := float64(btnImage.Bounds().Dx()) * scale
+    h := float64(btnImage.Bounds().Dy()) * scale
+
+    x := float64(screen.Bounds().Dx()) - w - float64(ejeX)
+    y := float64(screen.Bounds().Dy()) - h - float64(ejeY)
+
+    op := &ebiten.DrawImageOptions{}
+    op.GeoM.Scale(scale, scale)
+    op.GeoM.Translate(x, y)
+
+    screen.DrawImage(btnImage, op)
+}
+
+func ErrorDrawImage(screen *ebiten.Image){
+    if screen == nil {
+        fmt.Println("No se pudo cargar la imagen: ", )
+    }
+}

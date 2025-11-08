@@ -1,14 +1,17 @@
+// main.go
 package main
 
 import (
-    "log"
-    "math"
+	"log"
+	"math"
 
-    "github.com/hajimehoshi/ebiten/v2"
-    "github.com/hajimehoshi/ebiten/v2/ebitenutil"
-    _ "image/jpeg" // ⬅️ Necesario para decodificar fondo.jpg
+	_ "image/jpeg"
 
-    "multi/shared"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+
+	"multi/scenes"
+	"multi/shared"
 )
 
 type App struct {
@@ -16,7 +19,7 @@ type App struct {
 }
 
 func (a *App) Update() error {
-    // Aquí puedes agregar lógica de entrada, animaciones, etc.
+    scenes.DetectarClickLcd()
     return nil
 }
 
@@ -28,6 +31,8 @@ func (a *App) Draw(screen *ebiten.Image) {
 
     // Dibujar imagen centrada con escala
     shared.DrawCenteredImage(screen, a.fondo, escala)
+    scenes.DrawSistema(screen)
+
 
     // Texto encima del fondo
     ebitenutil.DebugPrint(screen, "¡Bienvenido a brigadas de vacunación!")
@@ -39,7 +44,8 @@ func (a *App) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
     // Cargar imagen de fondo
-    fondo := shared.LoadImage("public/fondo.jpg")
+    fondo := shared.LoadImage("public/parque.jpg")
+    scenes.InitSimulationScene()
 
     // Configurar ventana
     ebiten.SetWindowSize(1200, 687)
