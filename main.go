@@ -9,7 +9,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-
+    "os"
+	_ "fmt"
 	"multi/scenes"
 	"multi/shared"
 )
@@ -20,6 +21,7 @@ type App struct {
 
 func (a *App) Update() error {
     scenes.DetectarClickLcd()
+    scenes.DetectarClickBtnVisual()
     return nil
 }
 
@@ -31,11 +33,17 @@ func (a *App) Draw(screen *ebiten.Image) {
 
     // Dibujar imagen centrada con escala
     shared.DrawCenteredImage(screen, a.fondo, escala)
-    scenes.DrawSistema(screen)
-
+    if scenes.MostrarBrigada {
+        scenes.DrawSistema(screen)   // brigadaEscena.go
+    } else {
+        scenes.DrawFlujo(screen)     // flujoProyecto.go
+    }
 
     // Texto encima del fondo
     ebitenutil.DebugPrint(screen, "¡Bienvenido a brigadas de vacunación!")
+    if scenes.MostrarLcd {
+        scenes.DrawModalLcd(screen)
+    }
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -44,8 +52,14 @@ func (a *App) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
     // Cargar imagen de fondo
-    fondo := shared.LoadImage("public/parque.jpg")
+    fondo := shared.LoadImage("public/fondoBlanco.jpg")
+
+    fontData, err := os.ReadFile("public/tuFuente.ttf") // pon aquí tu archivo .ttf
+    shared.FontLoad(err, fontData, 18) // tamaño 18 px
+
     scenes.InitSimulationScene()
+    scenes.InitFlujoProyecto()
+    scenes.InitLcd()
 
     // Configurar ventana
     ebiten.SetWindowSize(1200, 687)

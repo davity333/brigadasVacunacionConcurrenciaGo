@@ -5,10 +5,10 @@ import (
 )
 
 var(
-    lsdNumero font.Face
+    LsdNumero font.Face
 )
 
-func FontLoadNumero(err error, fontData []byte, size float64) {
+func FontLoad(err error, fontData []byte, size float64) {
     if err != nil {
         panic(err)
     }
@@ -18,7 +18,7 @@ func FontLoadNumero(err error, fontData []byte, size float64) {
         panic(err)
     }
 
-    lsdNumero, err = opentype.NewFace(ttf, &opentype.FaceOptions{
+    LsdNumero, err = opentype.NewFace(ttf, &opentype.FaceOptions{
         Size:    size,
         DPI:     72,
         Hinting: font.HintingFull,
