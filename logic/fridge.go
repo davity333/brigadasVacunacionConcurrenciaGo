@@ -10,31 +10,34 @@ import (
 	"time"
 )
 
-// StartFridge inicia los sensores de la caja de vacunas
 func StartFridge(visual chan VisualEvent) {
 	go sensorTemperaturaInterior(visual)
 	go sensorTemperaturaExterior(visual)
 	go sensorHumedad(visual)
 }
 
-// sensorTemperaturaInterior simula lectura de temperatura interior
 func sensorTemperaturaInterior(visual chan VisualEvent) {
 	for {
-		temp := rand.Intn(8) + 2 // 2..9 grados
+		temp := rand.Intn(8) + 2
 		txt := strconv.Itoa(temp) + "°C INT"
 
-		// Flujo: fridgeSensor → rasp → apiVaccines → computadora → apiVacunados
+		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "rasp", To: "apiVaccines"}
+		visual <- VisualEvent{Text: txt, From: "rasp", To: "consumer"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "apiVaccines", To: "computadora"}
+		visual <- VisualEvent{Text: txt, From: "consumer", To: "apiWeb"}
 		time.Sleep(400 * time.Millisecond)
 
-		// Enviar a API de vacunas
-		go enviarSensorVacunaAPI("TempInterior-A1", float64(temp), "°C")
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "db"}
+		time.Sleep(400 * time.Millisecond)
+
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "computadora"}
+		time.Sleep(400 * time.Millisecond)
+
+		enviarSensorVacunaAPI("TempInterior-A1", float64(temp), "°C")
 
 		time.Sleep(3 * time.Second)
 	}
@@ -43,47 +46,58 @@ func sensorTemperaturaInterior(visual chan VisualEvent) {
 // sensorTemperaturaExterior simula lectura de temperatura exterior
 func sensorTemperaturaExterior(visual chan VisualEvent) {
 	for {
-		temp := rand.Intn(15) + 20 
+		temp := rand.Intn(15) + 20
 		txt := strconv.Itoa(temp) + "°C EXT"
 
+		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "rasp", To: "apiVaccines"}
+		visual <- VisualEvent{Text: txt, From: "rasp", To: "consumer"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "apiVaccines", To: "computadora"}
+		visual <- VisualEvent{Text: txt, From: "consumer", To: "apiWeb"}
 		time.Sleep(400 * time.Millisecond)
 
-		go enviarSensorVacunaAPI("TempExterior-A1", float64(temp), "°C")
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "db"}
+		time.Sleep(400 * time.Millisecond)
+
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "computadora"}
+		time.Sleep(400 * time.Millisecond)
+
+		enviarSensorVacunaAPI("TempExterior-A1", float64(temp), "°C")
 
 		time.Sleep(4 * time.Second)
 	}
 }
 
-// sensorHumedad simula lectura de humedad
 func sensorHumedad(visual chan VisualEvent) {
 	for {
 		hum := rand.Intn(30) + 50 // 50..79%
 		txt := strconv.Itoa(hum) + "%"
 
-		// Flujo: fridgeSensor → rasp → apiVaccines → computadora
+		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "rasp", To: "apiVaccines"}
+		visual <- VisualEvent{Text: txt, From: "rasp", To: "consumer"}
 		time.Sleep(400 * time.Millisecond)
 
-		visual <- VisualEvent{Text: txt, From: "apiVaccines", To: "computadora"}
+		visual <- VisualEvent{Text: txt, From: "consumer", To: "apiWeb"}
 		time.Sleep(400 * time.Millisecond)
 
-		go enviarSensorVacunaAPI("Humedad-A1", float64(hum), "%")
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "db"}
+		time.Sleep(400 * time.Millisecond)
+
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "computadora"}
+		time.Sleep(400 * time.Millisecond)
+
+		enviarSensorVacunaAPI("Humedad-A1", float64(hum), "%")
 
 		time.Sleep(5 * time.Second)
 	}
 }
 
-// enviarSensorVacunaAPI envía datos a la API de vacunas
 func enviarSensorVacunaAPI(sensor string, value float64, unit string) {
 	payload := map[string]interface{}{
 		"measurementUnit": unit,

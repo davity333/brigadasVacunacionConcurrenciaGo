@@ -25,6 +25,7 @@ func (a *App) Update() error {
 	scenes.DetectarClickLcd()
 	scenes.DetectarClickBtnVisual()
 
+	// Procesar eventos visuales sin bloquear
 	select {
 	case evt := <-a.visualChan:
 		scenes.AgregarEventoVisual(evt.Text, evt.From, evt.To)

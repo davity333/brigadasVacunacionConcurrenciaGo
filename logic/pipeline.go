@@ -11,8 +11,8 @@ import (
 )
 
 type VisualEvent struct {
-	Text string 
-	From string 
+	Text string
+	From string
 	To   string
 }
 
@@ -53,8 +53,11 @@ func etapaTemperatura(in chan Patient, out chan Patient, visual chan VisualEvent
 		visual <- VisualEvent{Text: strconv.Itoa(temp) + "°C", From: "apiWeb", To: "db"}
 		time.Sleep(400 * time.Millisecond)
 
-		// Enviar a API (siempre userID = 1)
-		go enviarTemperaturaAPI(temp, 1)
+		visual <- VisualEvent{Text: strconv.Itoa(temp) + "°C", From: "apiWeb", To: "computadora"}
+		time.Sleep(400 * time.Millisecond)
+
+		// Enviar a API (sin go, de forma síncrona)
+		enviarTemperaturaAPI(temp, 1)
 
 		// Si temperatura <= 37, pasar a etapa de alcohol
 		p.Temp = temp
@@ -88,8 +91,11 @@ func etapaAlcohol(in chan Patient, visual chan VisualEvent) {
 		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "db"}
 		time.Sleep(400 * time.Millisecond)
 
-		// Enviar a API (siempre userID = 1)
-		go enviarAlcoholAPI(alcoholOK, 1)
+		visual <- VisualEvent{Text: txt, From: "apiWeb", To: "computadora"}
+		time.Sleep(400 * time.Millisecond)
+
+		// Enviar a API (sin go, de forma síncrona)
+		enviarAlcoholAPI(alcoholOK, 1)
 
 		if alcoholOK {
 			log.Printf("Paciente aprobado para vacunación")
