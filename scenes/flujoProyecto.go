@@ -27,8 +27,9 @@ var (
 	mq3              *ebiten.Image
 	mlx90614         *ebiten.Image
 	btnMostrarVisual *ebiten.Image
-
+	flechaIzquierda *ebiten.Image
 	MostrarBrigada bool = false
+	dht21Int *ebiten.Image
 )
 
 func InitFlujoProyecto() {
@@ -48,6 +49,8 @@ func InitFlujoProyecto() {
 	mq3 = shared.LoadImage("public/mq3.png")
 	mlx90614 = shared.LoadImage("public/mlx90614.png")
 	btnMostrarVisual = shared.LoadImage("public/btnMostrarVisual.png")
+	flechaIzquierda = shared.LoadImage("public/flechaIzquierda.png")
+	dht21Int = shared.LoadImage("public/dht22.png")
 }
 
 func DrawFlujo(screen *ebiten.Image) {
@@ -91,9 +94,7 @@ func DrawFlujo(screen *ebiten.Image) {
 		shared.DrawImagen(screen, computadora, 0.8, 360, 270)
 	}
 
-	if dobleFlecha != nil {
-		shared.DrawImagen(screen, dobleFlecha, 0.3, 263, 300)
-	}
+
 
 	if apiVacunados != nil {
 		shared.DrawImagen(screen, apiVacunados, 0.3, 115, 270)
@@ -104,7 +105,11 @@ func DrawFlujo(screen *ebiten.Image) {
 	}
 
 	if flechaArriba != nil {
-		shared.DrawImagen(screen, flechaArriba, 0.4, 220, 370)
+		shared.DrawImagen(screen, flechaArriba, 0.3, 420, 370)
+	}
+
+	if flechaIzquierda != nil {
+		shared.DrawImagen(screen, flechaIzquierda, 0.3, 260, 300)
 	}
 
 	//sensores
@@ -146,6 +151,11 @@ func DrawFlujo(screen *ebiten.Image) {
 
 	if btnMostrarVisual != nil {
 		shared.DrawImagen(screen, btnMostrarVisual, 0.2, 1058, 610)
+	}
+
+	if dht21Int != nil {
+		shared.DrawImagen(screen, dht21Int, 0.3, 1030, 340)
+		text.Draw(screen, "DHT21", shared.LsdNumero, 1010, 280, color.White)
 	}
 
 	// IMPORTANTE: Dibujar los valores animados también en esta vista
