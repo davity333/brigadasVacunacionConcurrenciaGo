@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+var (
+    TempInterior int
+    TempExterior int
+    Humedad      int
+)
+
 func StartFridge(visual chan VisualEvent) {
 	go sensorTemperaturaInterior(visual)
 	go sensorTemperaturaExterior(visual)
@@ -20,6 +26,7 @@ func sensorTemperaturaInterior(visual chan VisualEvent) {
 	for {
 		temp := rand.Intn(8) + 2
 		txt := strconv.Itoa(temp) + "°C INT"
+		TempInterior = temp
 
 		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}
@@ -48,6 +55,7 @@ func sensorTemperaturaExterior(visual chan VisualEvent) {
 	for {
 		temp := rand.Intn(15) + 20
 		txt := strconv.Itoa(temp) + "°C EXT"
+		TempExterior= temp
 
 		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}
@@ -75,6 +83,7 @@ func sensorHumedad(visual chan VisualEvent) {
 	for {
 		hum := rand.Intn(30) + 50 // 50..79%
 		txt := strconv.Itoa(hum) + "%"
+		Humedad = hum
 
 		// Flujo correcto: sensor → rasp → consumer → apiWeb → db y computadora
 		visual <- VisualEvent{Text: txt, From: "fridgeSensor", To: "rasp"}

@@ -86,8 +86,8 @@ func DrawFlujo(screen *ebiten.Image) {
 		shared.DrawImagen(screen, apiVacunas, 0.3, 636, 270)
 	}
 
-	if dobleFlecha != nil {
-		shared.DrawImagen(screen, dobleFlecha, 0.3, 529, 300)
+	if flechaIzquierda != nil {
+		shared.DrawImagen(screen, flechaIzquierda, 0.3, 529, 300)
 	}
 
 	if computadora != nil {
@@ -108,8 +108,8 @@ func DrawFlujo(screen *ebiten.Image) {
 		shared.DrawImagen(screen, flechaArriba, 0.3, 420, 370)
 	}
 
-	if flechaIzquierda != nil {
-		shared.DrawImagen(screen, flechaIzquierda, 0.3, 260, 300)
+	if flecha != nil {
+		shared.DrawImagen(screen, flecha, 0.3, 260, 300)
 	}
 
 	//sensores
