@@ -7,67 +7,79 @@ import (
 
 	_ "image/jpeg"
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-    "os"
-	_ "fmt"
+	"multi/assets"
+	"multi/logic"
 	"multi/scenes"
 	"multi/shared"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type App struct {
-    fondo *ebiten.Image
+	fondo      *ebiten.Image
+	visualChan chan logic.VisualEvent
 }
 
 func (a *App) Update() error {
-    scenes.DetectarClickLcd()
-    scenes.DetectarClickBtnVisual()
-    return nil
+	scenes.DetectarClickLcd()
+	scenes.DetectarClickBtnVisual()
+
+	select {
+	case evt := <-a.visualChan:
+		scenes.AgregarEventoVisual(evt.Text, evt.From, evt.To)
+	default:
+	}
+
+	return nil
 }
 
 func (a *App) Draw(screen *ebiten.Image) {
-    // Calcular escala para ajustar fondo a la ventana
-    escalaX := float64(screen.Bounds().Dx()) / float64(a.fondo.Bounds().Dx())
-    escalaY := float64(screen.Bounds().Dy()) / float64(a.fondo.Bounds().Dy())
-    escala := math.Min(escalaX, escalaY)
+	escalaX := float64(screen.Bounds().Dx()) / float64(a.fondo.Bounds().Dx())
+	escalaY := float64(screen.Bounds().Dy()) / float64(a.fondo.Bounds().Dy())
+	escala := math.Min(escalaX, escalaY)
 
-    // Dibujar imagen centrada con escala
-    shared.DrawCenteredImage(screen, a.fondo, escala)
-    if scenes.MostrarBrigada {
-        scenes.DrawSistema(screen)   // brigadaEscena.go
-    } else {
-        scenes.DrawFlujo(screen)     // flujoProyecto.go
-    }
+	shared.DrawCenteredImage(screen, a.fondo, escala)
+	if scenes.MostrarBrigada {
+		scenes.DrawSistema(screen)
+	} else {
+		scenes.DrawFlujo(screen)
+	}
 
-    // Texto encima del fondo
-    ebitenutil.DebugPrint(screen, "¡Bienvenido a brigadas de vacunación!")
-    if scenes.MostrarLcd {
-        scenes.DrawModalLcd(screen)
-    }
+	ebitenutil.DebugPrint(screen, "¡Bienvenido a brigadas de vacunación!")
+	if scenes.MostrarLcd {
+		scenes.DrawModalLcd(screen)
+	}
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (int, int) {
-    return 1200, 687
+	return 1200, 687
 }
 
 func main() {
-    // Cargar imagen de fondo
-    fondo := shared.LoadImage("public/fondoBlanco.jpg")
+	fondo := shared.LoadImage("public/fondoBlanco.jpg")
 
-    fontData, err := os.ReadFile("public/tuFuente.ttf") // pon aquí tu archivo .ttf
-    shared.FontLoad(err, fontData, 18) // tamaño 18 px
+	shared.FontLoad(nil, assets.RobotoTTF, 18)
 
-    scenes.InitSimulationScene()
-    scenes.InitFlujoProyecto()
-    scenes.InitLcd()
+	scenes.InitSimulationScene()
+	scenes.InitFlujoProyecto()
+	scenes.InitLcd()
 
-    // Configurar ventana
-    ebiten.SetWindowSize(1200, 687)
-    ebiten.SetWindowTitle("Brigadas de vacunación - Simulación")
+	// Crear canal de eventos visuales
+	visualChan := make(chan logic.VisualEvent, 100)
 
-    // Ejecutar juego
-    app := &App{fondo: fondo}
-    if err := ebiten.RunGame(app); err != nil {
-        log.Fatal(err)
-    }
+	// Iniciar pipeline y sensores de vacunas
+	logic.StartPipeline(visualChan)
+	logic.StartFridge(visualChan)
+
+	ebiten.SetWindowSize(1200, 687)
+	ebiten.SetWindowTitle("Brigadas de vacunación - Simulación")
+
+	app := &App{
+		fondo:      fondo,
+		visualChan: visualChan,
+	}
+	if err := ebiten.RunGame(app); err != nil {
+		log.Fatal(err)
+	}
 }

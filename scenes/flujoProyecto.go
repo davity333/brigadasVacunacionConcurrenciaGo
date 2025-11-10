@@ -1,33 +1,33 @@
-//flujoProyecto.go
+// flujoProyecto.go
 package scenes
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
+	"image/color"
 	"multi/shared"
-	"fmt"
+
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"image/color"
 )
 
 var (
-	raspberry *ebiten.Image
-	flecha    *ebiten.Image
-	consumer *ebiten.Image
-	apiWeb    *ebiten.Image
-	baseDatos  *ebiten.Image
-	apiVacunas *ebiten.Image
-	dobleFlecha *ebiten.Image
-	computadora *ebiten.Image
-	apiVacunados *ebiten.Image
-	flechaLarga *ebiten.Image
-	flechaArriba *ebiten.Image
-	dht21 	*ebiten.Image
-	ds18b20 	*ebiten.Image
-	mq3 	 *ebiten.Image
-	mlx90614 *ebiten.Image
+	raspberry        *ebiten.Image
+	flecha           *ebiten.Image
+	consumer         *ebiten.Image
+	apiWeb           *ebiten.Image
+	baseDatos        *ebiten.Image
+	apiVacunas       *ebiten.Image
+	dobleFlecha      *ebiten.Image
+	computadora      *ebiten.Image
+	apiVacunados     *ebiten.Image
+	flechaLarga      *ebiten.Image
+	flechaArriba     *ebiten.Image
+	dht21            *ebiten.Image
+	ds18b20          *ebiten.Image
+	mq3              *ebiten.Image
+	mlx90614         *ebiten.Image
 	btnMostrarVisual *ebiten.Image
-	
+
 	MostrarBrigada bool = false
 )
 
@@ -62,7 +62,7 @@ func DrawFlujo(screen *ebiten.Image) {
 	if consumer != nil {
 		shared.DrawImagen(screen, consumer, 0.25, 610, 470)
 	}
-	
+
 	if flecha != nil {
 		shared.DrawImagen(screen, flecha, 0.3, 499, 500)
 	}
@@ -124,59 +124,53 @@ func DrawFlujo(screen *ebiten.Image) {
 		shared.DrawImagen(screen, mlx90614, 1, 820, 340)
 	}
 
-	//textos
 	if dht21 != nil {
-    shared.DrawImagen(screen, dht21, 1, 1020, 290)
-    // Texto cerca del sensor DHT21
-    text.Draw(screen, "DHT21", shared.LsdNumero, 1020, 280, color.White)
-}
+		shared.DrawImagen(screen, dht21, 1, 1020, 290)
+		text.Draw(screen, "DHT21", shared.LsdNumero, 1020, 280, color.White)
+	}
 
-if ds18b20 != nil {
-    shared.DrawImagen(screen, ds18b20, 0.3, 980, 210)
-    // Texto cerca del sensor DS18B20
-    text.Draw(screen, "DS18B20", shared.LsdNumero, 980, 200, color.White)
-}
+	if ds18b20 != nil {
+		shared.DrawImagen(screen, ds18b20, 0.3, 980, 210)
+		text.Draw(screen, "DS18B20", shared.LsdNumero, 980, 200, color.White)
+	}
 
-if mq3 != nil {
-    shared.DrawImagen(screen, mq3, 1, 888, 205)
-    // Texto cerca del sensor MQ3
-    text.Draw(screen, "MQ3", shared.LsdNumero, 888, 195, color.White)
-}
+	if mq3 != nil {
+		shared.DrawImagen(screen, mq3, 1, 888, 205)
+		text.Draw(screen, "MQ3", shared.LsdNumero, 888, 195, color.White)
+	}
 
-if mlx90614 != nil {
-    shared.DrawImagen(screen, mlx90614, 1, 820, 340)
-    // Texto cerca del sensor MLX90614
-    text.Draw(screen, "MLX90614", shared.LsdNumero, 820, 330, color.White)
-}
+	if mlx90614 != nil {
+		shared.DrawImagen(screen, mlx90614, 1, 820, 340)
+		text.Draw(screen, "MLX90614", shared.LsdNumero, 820, 330, color.White)
+	}
 
-	//otros
 	if btnMostrarVisual != nil {
 		shared.DrawImagen(screen, btnMostrarVisual, 0.2, 1058, 610)
 	}
+
+	// IMPORTANTE: Dibujar los valores animados también en esta vista
+	dibujarValoresAnimados(screen)
 }
 
 func DetectarClickBtnVisual() {
-    if btnMostrarVisual == nil {
-        return
-    }
+	if btnMostrarVisual == nil {
+		return
+	}
 
-    if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-        x, y := ebiten.CursorPosition()
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
 
-        escala := 0.2
-        ancho := int(float64(btnMostrarVisual.Bounds().Dx()) * escala)
-        alto  := int(float64(btnMostrarVisual.Bounds().Dy()) * escala)
+		escala := 0.2
+		ancho := int(float64(btnMostrarVisual.Bounds().Dx()) * escala)
+		alto := int(float64(btnMostrarVisual.Bounds().Dy()) * escala)
 
-        inicioX := 45 - (ancho / 2)+40
-        inicioY := 50 - (alto / 2)
-        finX := inicioX + ancho
-        finY := inicioY + alto
+		inicioX := 45 - (ancho / 2) + 40
+		inicioY := 50 - (alto / 2)
+		finX := inicioX + ancho
+		finY := inicioY + alto
 
-        fmt.Printf("Área Visual: X[%d-%d] Y[%d-%d] Cursor: (%d,%d)\n",
-            inicioX, finX, inicioY, finY, x, y)
-
-        if x >= inicioX && x <= finX && y >= inicioY && y <= finY {
-            MostrarBrigada = !MostrarBrigada
-        }
-    }
+		if x >= inicioX && x <= finX && y >= inicioY && y <= finY {
+			MostrarBrigada = !MostrarBrigada
+		}
+	}
 }

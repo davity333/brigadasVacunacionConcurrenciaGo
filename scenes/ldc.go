@@ -67,10 +67,10 @@ func DetectarClickCerrar() {
             inicioX, finX, inicioY, finY, x, y)
 
         if x >= inicioX && x <= finX && y >= inicioY && y <= finY {
-            fmt.Println("✅ Click dentro del área, cerrando modal")
+            fmt.Println("Click dentro del área, cerrando modal")
             MostrarLcd = false
         } else {
-            fmt.Println("❌ Click fuera del área")
+            fmt.Println("Click fuera del área")
         }
     }
 }
